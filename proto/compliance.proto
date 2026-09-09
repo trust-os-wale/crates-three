@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package trustos.compliance.v1;
+
+service ComplianceService {
+    rpc EvaluateControl(EvaluateControlRequest) returns (EvaluateControlResponse);
+    rpc EvaluateFramework(EvaluateFrameworkRequest) returns (EvaluateFrameworkResponse);
+    rpc CollectEvidence(CollectEvidenceRequest) returns (CollectEvidenceResponse);
+    rpc ValidateEvidence(ValidateEvidenceRequest) returns (ValidateEvidenceResponse);
+    rpc MapFramework(MapFrameworkRequest) returns (MapFrameworkResponse);
+}
+
+message EvaluateControlRequest {
+    string tenant_id = 1;
+    string control_id = 2;
+    string framework_id = 3;
+}
+
+message EvaluateControlResponse {
+    string control_id = 1;
+    string status = 2;
+    double score = 3;
+    uint32 evidence_count = 4;
+    repeated string issues = 5;
+    string evaluated_at = 6;
+}
+
+message EvaluateFrameworkRequest {
+    string tenant_id = 1;
+    string framework_id = 2;
+}
+
+message EvaluateFrameworkResponse {
+    string framework_id = 1;
+    double overall_score = 2;
+    uint32 total_controls = 3;
+    uint32 compliant = 4;
+    uint32 non_compliant = 5;
+    uint32 not_applicable = 6;
+    repeated ControlResult controls = 7;
+}
+
+message ControlResult {
+    string control_id = 1;
+    string status = 2;
+    double score = 3;
+}
+
+message CollectEvidenceRequest {
+    string tenant_id = 1;
+    string control_id = 2;
+    string source = 3;
+    string evidence_type = 4;
+    bytes content = 5;
+    map<string, string> metadata = 6;
+}
+
+message CollectEvidenceResponse {
+    string evidence_id = 1;
+    string hash = 2;
+    bool validated = 3;
+    string collected_at = 4;
+}
+
+message ValidateEvidenceRequest {
+    string evidence_id = 1;
+    string tenant_id = 2;
+}
+
+message ValidateEvidenceResponse {
+    bool valid = 1;
+    double confidence_score = 2;
+    string validation_method = 3;
+}
+
+message MapFrameworkRequest {
+    string source_framework = 1;
+    string target_framework = 2;
+}
+
+message MapFrameworkResponse {
+    map<string, string> control_mappings = 1;
+    double coverage_percentage = 2;
+}

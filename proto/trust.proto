@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package trustos.trust.v1;
+
+service TrustService {
+    rpc ComputeTrustScore(ComputeTrustScoreRequest) returns (ComputeTrustScoreResponse);
+    rpc GetTrustHistory(GetTrustHistoryRequest) returns (GetTrustHistoryResponse);
+    rpc PropagateTrust(PropagateTrustRequest) returns (PropagateTrustResponse);
+}
+
+message ComputeTrustScoreRequest {
+    string tenant_id = 1;
+    bool force_recompute = 2;
+}
+
+message ComputeTrustScoreResponse {
+    string tenant_id = 1;
+    double overall_score = 2;
+    double compliance_component = 3;
+    double risk_component = 4;
+    double evidence_quality = 5;
+    double governance_component = 6;
+    string trend = 7;
+    string computed_at = 8;
+    string valid_until = 9;
+}
+
+message GetTrustHistoryRequest {
+    string tenant_id = 1;
+    uint32 days = 2;
+}
+
+message GetTrustHistoryResponse {
+    repeated TrustHistoryPoint history = 1;
+}
+
+message TrustHistoryPoint {
+    string date = 1;
+    double score = 2;
+    string computed_at = 3;
+}
+
+message PropagateTrustRequest {
+    string tenant_id = 1;
+    string entity_id = 2;
+    string entity_type = 3;
+}
+
+message PropagateTrustResponse {
+    repeated TrustPropagationNode nodes = 1;
+    double network_trust_score = 2;
+}
+
+message TrustPropagationNode {
+    string entity_id = 1;
+    string entity_type = 2;
+    double trust_score = 3;
+    double weight = 4;
+}

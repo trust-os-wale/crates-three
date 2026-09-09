@@ -1,0 +1,42 @@
+[package]
+name = "auth"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+common = { path = "../common" }
+
+# Async runtime
+tokio = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json.workspace = true
+
+# Cryptography
+jsonwebtoken = "9.2"
+ed25519-dalek = "2.1"
+sha2 = "0.10"
+hmac = "0.12"
+ring = "0.17"
+rustls = "0.21"
+
+# Utilities
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = "1.0"
+anyhow = "1.0"
+log = "0.4"
+
+# TOTP/MFA
+totp-rs = { version = "5.4", features = ["qr", "gen_secret"] }
+base64 = "0.21"
+
+# Async trait
+async-trait = "0.1"
+
+# Random
+rand = "0.8"

@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package trustos.identity.v1;
+
+service IdentityService {
+    rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
+    rpc VerifySession(VerifySessionRequest) returns (VerifySessionResponse);
+    rpc RegisterCredential(RegisterCredentialRequest) returns (RegisterCredentialResponse);
+    rpc AssertCredential(AssertCredentialRequest) returns (AssertCredentialResponse);
+    rpc EvaluateRisk(EvaluateRiskRequest) returns (EvaluateRiskResponse);
+}
+
+message AuthenticateRequest {
+    string username = 1;
+    string password = 2;
+    string tenant_id = 3;
+    string device_id = 4;
+    string ip_address = 5;
+    string user_agent = 6;
+}
+
+message AuthenticateResponse {
+    string session_id = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+    bool mfa_required = 4;
+    repeated string available_mfa_methods = 5;
+    uint32 expires_in = 6;
+}
+
+message VerifySessionRequest {
+    string session_id = 1;
+    string access_token = 2;
+    string tenant_id = 3;
+}
+
+message VerifySessionResponse {
+    bool valid = 1;
+    string user_id = 2;
+    string tenant_id = 3;
+    repeated string roles = 4;
+    repeated string permissions = 5;
+    map<string, string> claims = 6;
+}
+
+message RegisterCredentialRequest {
+    string user_id = 1;
+    string tenant_id = 2;
+    string credential_type = 3;
+    bytes credential_data = 4;
+    string device_name = 5;
+}
+
+message RegisterCredentialResponse {
+    string credential_id = 1;
+    bytes attestation_object = 2;
+}
+
+message AssertCredentialRequest {
+    string user_id = 1;
+    string tenant_id = 2;
+    string credential_id = 3;
+    bytes assertion_data = 4;
+}
+
+message AssertCredentialResponse {
+    bool verified = 1;
+    uint32 sign_count = 2;
+}
+
+message EvaluateRiskRequest {
+    string user_id = 1;
+    string tenant_id = 2;
+    string session_id = 3;
+    string ip_address = 4;
+    string device_id = 5;
+    string action = 6;
+    string resource = 7;
+}
+
+message EvaluateRiskResponse {
+    double risk_score = 1;
+    string risk_level = 2;
+    bool step_up_required = 3;
+    string recommended_action = 4;
+}

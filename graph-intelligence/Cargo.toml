@@ -1,0 +1,22 @@
+[package]
+name = "graph-intelligence-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+name = "graph_intelligence"
+path = "src/lib.rs"
+
+[dependencies]
+common = { path = "../common" }
+graph = { path = "../graph" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+async-trait = { workspace = true }
+thiserror = "1.0"

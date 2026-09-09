@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package trustos.events.v1;
+
+service EventService {
+    rpc Publish(PublishRequest) returns (PublishResponse);
+    rpc Subscribe(SubscribeRequest) returns (stream EventMessage);
+    rpc PublishBatch(PublishBatchRequest) returns (PublishBatchResponse);
+    rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse);
+}
+
+message EventMessage {
+    string event_id = 1;
+    string event_type = 2;
+    uint32 event_version = 3;
+    string tenant_id = 4;
+    string aggregate_id = 5;
+    string correlation_id = 6;
+    string causation_id = 7;
+    string source_service = 8;
+    bytes data = 9;
+    map<string, string> metadata = 10;
+    string occurred_at = 11;
+    string signature = 12;
+    string schema_version = 13;
+}
+
+message PublishRequest {
+    EventMessage event = 1;
+    string topic = 2;
+}
+
+message PublishResponse {
+    bool accepted = 1;
+    string event_id = 2;
+    uint64 offset = 3;
+    string partition = 4;
+}
+
+message SubscribeRequest {
+    string topic = 1;
+    string consumer_group = 2;
+    string tenant_id = 3;
+    uint64 offset = 4;
+}
+
+message PublishBatchRequest {
+    repeated EventMessage events = 1;
+    string topic = 2;
+}
+
+message PublishBatchResponse {
+    uint32 accepted_count = 1;
+    repeated string event_ids = 2;
+}
+
+message GetSchemaRequest {
+    string event_type = 1;
+    uint32 version = 2;
+}
+
+message GetSchemaResponse {
+    string event_type = 1;
+    uint32 version = 2;
+    string schema_json = 3;
+    repeated string required_fields = 4;
+}
+
+message EventContract {
+    string event_type = 1;
+    uint32 current_version = 2;
+    uint32 minimum_version = 3;
+    string description = 4;
+    bool deprecated = 5;
+    string deprecation_message = 6;
+}

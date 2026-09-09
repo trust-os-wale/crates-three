@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package trustos.governance.v1;
+
+service GovernanceService {
+    rpc ComputeScore(ComputeScoreRequest) returns (ComputeScoreResponse);
+    rpc DetectDrift(DetectDriftRequest) returns (DetectDriftResponse);
+    rpc GetFrameworkStatus(GetFrameworkStatusRequest) returns (GetFrameworkStatusResponse);
+    rpc ProcessGovernanceEvent(ProcessGovernanceEventRequest) returns (ProcessGovernanceEventResponse);
+}
+
+message ComputeScoreRequest {
+    string tenant_id = 1;
+    string framework_id = 2;
+    bool force_recompute = 3;
+}
+
+message ComputeScoreResponse {
+    string tenant_id = 1;
+    string framework_id = 2;
+    double overall_score = 3;
+    double compliance_weight = 4;
+    double risk_weight = 5;
+    double trust_weight = 6;
+    uint32 control_count = 7;
+    uint32 compliant_count = 8;
+    uint32 non_compliant_count = 9;
+    string computed_at = 10;
+    string next_computation = 11;
+}
+
+message DetectDriftRequest {
+    string tenant_id = 1;
+    string framework_id = 2;
+    string baseline_id = 3;
+}
+
+message DetectDriftResponse {
+    bool drift_detected = 1;
+    double drift_score = 2;
+    repeated DriftEvent drift_events = 3;
+}
+
+message DriftEvent {
+    string control_id = 1;
+    string previous_status = 2;
+    string current_status = 3;
+    double impact_score = 4;
+    string detected_at = 5;
+}
+
+message GetFrameworkStatusRequest {
+    string tenant_id = 1;
+    string framework_id = 2;
+}
+
+message GetFrameworkStatusResponse {
+    string framework_id = 1;
+    string framework_name = 2;
+    double readiness_score = 3;
+    string status = 4;
+    uint32 total_controls = 5;
+    uint32 implemented_controls = 6;
+    string last_assessment = 7;
+}
+
+message ProcessGovernanceEventRequest {
+    string tenant_id = 1;
+    string event_type = 2;
+    string event_source = 3;
+    bytes event_payload = 4;
+}
+
+message ProcessGovernanceEventResponse {
+    bool accepted = 1;
+    string event_id = 2;
+    string trace_id = 3;
+}

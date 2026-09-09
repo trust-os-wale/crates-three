@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package trustos.audit.v1;
+
+service AuditService {
+    rpc RecordEvent(RecordEventRequest) returns (RecordEventResponse);
+    rpc GetAuditTrail(GetAuditTrailRequest) returns (GetAuditTrailResponse);
+    rpc VerifyIntegrity(VerifyIntegrityRequest) returns (VerifyIntegrityResponse);
+    rpc ReplayEvents(ReplayEventsRequest) returns (stream AuditEvent);
+}
+
+message RecordEventRequest {
+    string tenant_id = 1;
+    string event_type = 2;
+    string actor_id = 3;
+    string actor_type = 4;
+    string resource_type = 5;
+    string resource_id = 6;
+    string action = 7;
+    map<string, string> changes = 8;
+    string source_ip = 9;
+    string user_agent = 10;
+    string correlation_id = 11;
+    bytes additional_data = 12;
+}
+
+message RecordEventResponse {
+    string event_id = 1;
+    string hash = 2;
+    string previous_hash = 3;
+    uint64 sequence = 4;
+    string recorded_at = 5;
+    string signature = 6;
+}
+
+message GetAuditTrailRequest {
+    string tenant_id = 1;
+    string resource_type = 2;
+    string resource_id = 3;
+    uint32 limit = 4;
+    uint32 offset = 5;
+    string from_date = 6;
+    string to_date = 7;
+}
+
+message GetAuditTrailResponse {
+    repeated AuditEvent events = 1;
+    uint32 total = 2;
+    bool has_more = 3;
+}
+
+message VerifyIntegrityRequest {
+    string tenant_id = 1;
+    string event_id = 2;
+}
+
+message VerifyIntegrityResponse {
+    bool verified = 1;
+    string current_hash = 2;
+    string computed_hash = 3;
+    bool chain_intact = 4;
+}
+
+message ReplayEventsRequest {
+    string tenant_id = 1;
+    string from_event_id = 2;
+    string to_event_id = 3;
+    repeated string event_types = 4;
+}
+
+message AuditEvent {
+    string event_id = 1;
+    string tenant_id = 2;
+    string event_type = 3;
+    string actor_id = 4;
+    string actor_type = 5;
+    string resource_type = 6;
+    string resource_id = 7;
+    string action = 8;
+    map<string, string> changes = 9;
+    string hash = 10;
+    string previous_hash = 11;
+    uint64 sequence = 12;
+    string recorded_at = 13;
+    string signature = 14;
+}

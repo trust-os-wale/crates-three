@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package trustos.risk.v1;
+
+service RiskService {
+    rpc CalculateRisk(CalculateRiskRequest) returns (CalculateRiskResponse);
+    rpc PropagateRisk(PropagateRiskRequest) returns (PropagateRiskResponse);
+    rpc ForecastRisk(ForecastRiskRequest) returns (ForecastRiskResponse);
+    rpc GetRiskGraph(GetRiskGraphRequest) returns (GetRiskGraphResponse);
+}
+
+message CalculateRiskRequest {
+    string tenant_id = 1;
+    string source_type = 2;
+    string source_id = 3;
+    map<string, double> factors = 4;
+}
+
+message CalculateRiskResponse {
+    string risk_id = 1;
+    double likelihood = 2;
+    double impact = 3;
+    double risk_score = 4;
+    string risk_level = 5;
+    repeated string affected_assets = 6;
+}
+
+message PropagateRiskRequest {
+    string tenant_id = 1;
+    string source_risk_id = 2;
+    uint32 propagation_depth = 3;
+}
+
+message PropagateRiskResponse {
+    repeated RiskNode affected_nodes = 1;
+    double total_blast_radius = 2;
+}
+
+message RiskNode {
+    string node_id = 1;
+    string node_type = 2;
+    string node_name = 3;
+    double propagated_risk = 4;
+    double distance_from_source = 5;
+}
+
+message ForecastRiskRequest {
+    string tenant_id = 1;
+    string scenario = 2;
+    uint32 forecast_days = 3;
+    map<string, double> parameters = 4;
+}
+
+message ForecastRiskResponse {
+    repeated RiskForecast forecast_points = 1;
+    double confidence_interval = 2;
+}
+
+message RiskForecast {
+    string date = 1;
+    double predicted_score = 2;
+    double lower_bound = 3;
+    double upper_bound = 4;
+}
+
+message GetRiskGraphRequest {
+    string tenant_id = 1;
+    uint32 depth = 2;
+}
+
+message GetRiskGraphResponse {
+    repeated RiskGraphNode nodes = 1;
+    repeated RiskGraphEdge edges = 2;
+}
+
+message RiskGraphNode {
+    string id = 1;
+    string type = 2;
+    string label = 3;
+    double risk_score = 4;
+    map<string, string> properties = 5;
+}
+
+message RiskGraphEdge {
+    string source_id = 1;
+    string target_id = 2;
+    string relationship = 3;
+    double weight = 4;
+}
